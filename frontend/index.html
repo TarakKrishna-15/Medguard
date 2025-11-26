@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MediGuard AI — Demo</title>
+
+  <!-- Optional: set API base without editing JS (leave blank to use same origin) -->
+  <meta name="mg-api-base" content="" />
+
+  <link rel="stylesheet" href="/frontend/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- small backend status -->
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <div id="backendStatus" class="status-pill">Checking backend...</div>
+  </div>
+
+  <!-- SPLASH VIEW -->
+  <div id="splashView" class="splash">
+    <div class="brand">
+      <div class="logo">MG</div>
+      <h1>MediGuard AI</h1>
+      <p class="lead">Smart medicine quality verification — Patient, Pharmacy & Doctor tools.</p>
+
+      <div class="cta">
+        <button class="btn btn-primary" id="startBtn">Get Started</button>
+        <button class="btn" id="howBtn">How it works</button>
+      </div>
+
+      <div class="small" style="margin-top:12px">Fast • Secure • Real-time</div>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin:0 0 8px;">Choose your portal</h3>
+      <p class="muted" style="margin-bottom:12px">Click a portal to continue. You will be asked to login or signup.</p>
+
+      <div class="grid cols-3">
+
+        <div class="portal-card" data-role="patient">
+          <div class="portal-icon blue">👦</div>
+          <div style="font-size:18px;font-weight:700">Patient</div>
+          <div class="muted">Verify medicine authenticity & quality</div>
+        </div>
+
+        <div class="portal-card" data-role="pharmacy">
+          <div class="portal-icon pink">🏬</div>
+          <div style="font-size:18px;font-weight:700">Pharmacy Owner</div>
+          <div class="muted">Manage inventory & quality</div>
+        </div>
+
+        <div class="portal-card" data-role="doctor">
+          <div class="portal-icon green">🩺</div>
+          <div style="font-size:18px;font-weight:700">Doctor</div>
+          <div class="muted">Prescribe safely with AI</div>
+        </div>
+
+      </div>
+
+      <div id="splashNote" class="small muted" style="margin-top:14px">
+        Pick a portal — login or create an account to access the dashboard.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- AUTH VIEW -->
+  <div id="authView" class="hidden">
+    <div class="auth-panel card">
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div id="authTitle" style="font-size:18px;font-weight:700">Sign in</div>
+          <div id="authSub" class="small muted">Sign in to access your portal</div>
+        </div>
+
+        <button id="backToPortal" class="logout">Back</button>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center">
+        <div class="small">Portal:</div>
+        <div id="selectedRole" style="font-weight:700"></div>
+      </div>
+
+      <div id="authForms">
+        <!-- LOGIN FORM -->
+        <div id="loginForm">
+          <div class="form-row">
+            <div style="flex:1">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" placeholder="you@example.com" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" placeholder="password" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <button id="doLogin" class="btn btn-primary">Login</button>
+            <button id="showSignup" class="btn">Create account</button>
+            <div id="loginError" class="error" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <div id="signupForm" class="hidden">
+          <div class="form-row">
+            <div style="flex:1">
+              <label for="signupName">Display Name</label>
+              <input type="text" id="signupName" placeholder="e.g., PharmaShop#1" />
+              <div class="small muted">
+                At least 6 characters, must include a digit and a special character.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label for="signupEmail">Email</label>
+              <input type="email" id="signupEmail" placeholder="you@example.com" />
+            </div>
+            <div style="flex:1">
+              <label for="signupPhone">Phone (optional)</label>
+              <input type="text" id="signupPhone" placeholder="+91 9876543210" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label for="signupPassword">Password</label>
+              <input type="password" id="signupPassword" placeholder="min 7 characters" />
+              <div class="small muted">
+                Password must be at least 7 characters.
+              </div>
+            </div>
+            <div style="flex:1">
+              <label for="signupRole">Role</label>
+              <select id="signupRole">
+                <option value="patient">Patient</option>
+                <option value="pharmacy">Pharmacy Owner</option>
+                <option value="doctor">Doctor</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <button id="doSignup" class="btn btn-primary">Create account</button>
+            <button id="backToLogin" class="btn">Back to login</button>
+            <div id="signupError" class="error" style="display:none"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- DASHBOARD / PORTAL -->
+  <div id="portalView" class="hidden">
+    <div class="topbar">
+      <div>
+        <h2 id="dashTitle">Dashboard</h2>
+        <div class="small muted" id="dashSub">Overview</div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="small muted">
+          Signed in as <strong id="currentUserDisplay"></strong>
+          (<span id="currentUserRole"></span>)
+        </div>
+        <button id="logoutBtn" class="logout">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:2fr 1fr;gap:12px">
+
+      <!-- LEFT SIDE -->
+      <div>
+
+        <!-- HIGH RISK TABLE -->
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>High Risk / Watchlist</strong>
+              <div class="small muted">Medicines flagged as high risk</div>
+            </div>
+            <div>
+              <button id="refreshBtn" class="btn">Refresh</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <table id="highRiskTable">
+              <thead>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Batch</th>
+                  <th>Quality</th>
+                  <th>Status</th>
+                  <th>Supplier</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- JS inserts rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- LOOKUP -->
+        <div class="card">
+          <strong>Lookup / Verify</strong>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <input id="lookupInput" type="text" placeholder="Enter batch e.g. BAT12345" />
+            <button id="lookupBtn" class="btn btn-primary">Lookup</button>
+          </div>
+          <div id="lookupResult" style="margin-top:10px"></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Quick Actions</strong>
+              <div class="small muted">Upload evidence, scan QR (demo)</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            <input type="file" id="evidenceFile" />
+            <button id="fakeScanBtn" class="btn">Simulate QR Scan</button>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="card">
+          <strong>Profile</strong>
+          <div style="margin-top:10px" id="profileBox"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div> <!-- END CONTAINER -->
+
+<!-- LINK JS -->
+<script src="/frontend/script.js"></script>
+
+</body>
+</html>
